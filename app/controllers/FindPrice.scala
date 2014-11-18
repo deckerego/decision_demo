@@ -6,29 +6,20 @@ import play.api.mvc._
 object FindPrice extends Controller {
 
   object Tier extends Enumeration {
-    type Tier = Value
-    val GOLD, SILVER, BRONZE = Value
+    val GOLD = 0
+    val SILVER = 1
+    val BRONZE = 2
   }
 
-  def findPrice(years: Integer, level: Tier.Value): Integer = {
-    if(years == 1)
-      if(level == Tier.GOLD)   20
-      else if(level == Tier.SILVER) 18
-      else 16
-    else if(years == 2)
-      if(level == Tier.GOLD)   35
-      else if(level == Tier.SILVER) 30
-      else 25
-    else
-      if(level == Tier.GOLD)   50
-      else if(level == Tier.SILVER) 40
-      else 35
-  }
-
-  import Tier._
+  def priceTable = Array(
+    //    Gold, Silver, Bronze
+    Array(20,   18,     16), //One Month
+    Array(35,   30,     25), //One Year
+    Array(50,   40,     35)  //Three Years
+  )
 
   def index = Action {
-    Ok(views.html.showPrice(findPrice(2, GOLD)))
+    Ok(views.html.showPrice(priceTable(1)(Tier.GOLD)))
   }
 
 }

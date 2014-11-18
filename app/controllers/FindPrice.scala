@@ -10,19 +10,22 @@ object FindPrice extends Controller {
     val GOLD, SILVER, BRONZE = Value
   }
 
-  def findPrice(years: Integer, level: Tier.Value): Integer = {
-    if(years == 1)
-      if(level == Tier.GOLD)   20
-      else if(level == Tier.SILVER) 18
-      else 16
-    else if(years == 2)
-      if(level == Tier.GOLD)   35
-      else if(level == Tier.SILVER) 30
-      else 25
-    else
-      if(level == Tier.GOLD)   50
-      else if(level == Tier.SILVER) 40
-      else 35
+  case class Subscription(years: Int, level: Tier.Value)
+
+  def findPrice(years: Int, level: Tier.Value): Integer = {
+    val subscription = Subscription(years, level)
+
+    subscription match {
+      case Subscription(1, Tier.GOLD)   => 20;
+      case Subscription(1, Tier.SILVER) => 18;
+      case Subscription(1, _)           => 16;
+      case Subscription(2, Tier.GOLD)   => 35;
+      case Subscription(2, Tier.SILVER) => 30;
+      case Subscription(2, _)           => 25;
+      case Subscription(3, Tier.GOLD)   => 50;
+      case Subscription(3, Tier.SILVER) => 40;
+      case Subscription(3, _)           => 35;
+    }
   }
 
   import Tier._

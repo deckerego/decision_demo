@@ -10,5 +10,7 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  ws
+  ws,
+  "org.drools" % "drools-core" % "6.1.0.Final",
+  "org.drools" % "drools-compiler" % "6.1.0.Final"
 )

@@ -1,0 +1,52 @@
+package rules.planTwo
+
+import controllers.*
+
+dialect "mvel"
+
+rule "Three year base subscription"
+  when
+    $sub: Subscription(years >= 3)
+  then
+    insert(new Price(30))
+end
+
+rule "Two year base subscription"
+  when
+    $sub: Subscription(years == 2)
+  then
+    insert(new Price(20))
+end
+
+rule "One year (or less) base subscription"
+  when
+    $sub: Subscription(years <= 1)
+  then
+    insert(new Price(14))
+end
+
+rule "Gold service level multiplier"
+  no-loop
+  when
+    $subs: Subscription(level == Tier.GOLD)
+    $price: Price()
+  then
+    modify($price) {
+      amount_$eq($price.amount * 3)
+    }
+end
+
+rule "Silver service level multiplier"
+  no-loop
+  when
+    $subs: Subscription(level == Tier.SILVER)
+    $price: Price()
+  then
+    modify($price) {
+      amount_$eq($price.amount * 3)
+    }
+end
+
+query "final price"
+  finalPrice: Price()
+end

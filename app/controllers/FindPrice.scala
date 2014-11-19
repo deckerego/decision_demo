@@ -1,28 +1,38 @@
 package controllers
 
+import scala.collection.JavaConversions
+
 import play.api._
 import play.api.mvc._
 
-object FindPrice extends Controller {
+import org.kie.api._;
+import org.kie.api.runtime._;
 
-  object Tier extends Enumeration {
-    type Tier = Value
-    val GOLD, SILVER, BRONZE = Value
-  }
+class Price(var amount: Int)
+
+case class Subscription(years: Int, level: Tier.Value)
+
+object Tier extends Enumeration {
+  type Tier = Value
+  val GOLD, SILVER, BRONZE = Value
+}
+
+object FindPrice extends Controller {
+  private lazy val container = KieServices.Factory.get().getKieClasspathContainer()
 
   def findPrice(years: Integer, level: Tier.Value): Integer = {
-    if(years == 1)
-      if(level == Tier.GOLD)   20
-      else if(level == Tier.SILVER) 18
-      else 16
-    else if(years == 2)
-      if(level == Tier.GOLD)   35
-      else if(level == Tier.SILVER) 30
-      else 25
-    else
-      if(level == Tier.GOLD)   50
-      else if(level == Tier.SILVER) 40
-      else 35
+    var subscription = Subscription(years, level)
+
+    val session = container.newKieSession("PricingPlanOneKS")
+    session.insert(subscription)
+    session.fireAllRules()
+
+    val finalPrices = JavaConversions.iterableAsScalaIterable(session.getQueryResults("final price"))
+    val finalPrice = finalPrices.head.get("finalPrice").asInstanceOf[Price]
+
+    session.dispose()
+
+    finalPrice.amount
   }
 
   import Tier._

@@ -43,7 +43,7 @@ rule "Silver service level multiplier"
     $price: Price()
   then
     modify($price) {
-      amount_$eq($price.amount * 3)
+      amount_$eq($price.amount * 2)
     }
 end
 
